@@ -47,6 +47,13 @@
     gap: 10px;
     margin: 30px auto;
     max-width: 900px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+  }
+  .gallery.show {
+    opacity: 1;
+    pointer-events: auto;
   }
   .gallery img {
     width: 150px;
@@ -84,10 +91,10 @@
 <button id="startBtn">Kutlamayı Başlat</button>
 
 <canvas id="confettiCanvas"></canvas>
-<audio id="song" src="https://raw.githubusercontent.com/YLZirem/Deneme/main/sarki.mp3"></audio>
+<audio id="song" src="https://raw.githubusercontent.com/KULLANICI_ADIN/Deneme/main/sarki.mp3"></audio>
 
 <!-- Fotoğraf galerisi -->
-<div class="gallery">
+<div class="gallery" id="gallery">
   <img src="foto1.jpg" alt="Fotoğraf 1" />
   <img src="foto2.jpg" alt="Fotoğraf 2" />
   <img src="foto3.jpg" alt="Fotoğraf 3" />
@@ -104,6 +111,7 @@ const startBtn = document.getElementById('startBtn');
 const audio = document.getElementById('song');
 const canvas = document.getElementById('confettiCanvas');
 const ctx = canvas.getContext('2d');
+const gallery = document.getElementById('gallery');
 
 let W, H;
 let confetti = [];
@@ -171,6 +179,9 @@ startBtn.addEventListener('click', () => {
   drawConfetti();
   startBtn.disabled = true;
   startBtn.textContent = "Kutlama başladı! 🎉";
+
+  // Galeriyi göster
+  gallery.classList.add('show');
 });
 
 // Galeri için lightbox scripti
