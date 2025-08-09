@@ -11,7 +11,7 @@
     font-family: Arial, sans-serif;
     text-align: center;
     overflow-x: hidden;
-    height: 100vh;
+    min-height: 100vh;
     position: relative;
   }
   h1 {
@@ -19,7 +19,7 @@
     font-size: 2.5rem;
   }
   button {
-    margin-top: 20px;
+    margin: 20px auto;
     padding: 10px 20px;
     font-size: 1.2rem;
     cursor: pointer;
@@ -27,6 +27,7 @@
     border: none;
     border-radius: 10px;
     color: white;
+    display: block;
     z-index: 10;
     position: relative;
   }
@@ -38,6 +39,42 @@
     pointer-events: none;
     z-index: 5;
   }
+  /* Galeri stili */
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px auto;
+    max-width: 900px;
+  }
+  .gallery img {
+    width: 150px;
+    height: 100px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.3s;
+  }
+  .gallery img:hover {
+    transform: scale(1.05);
+  }
+  /* Lightbox stil */
+  #lightbox {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  #lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #fff;
+  }
 </style>
 </head>
 <body>
@@ -48,6 +85,19 @@
 
 <canvas id="confettiCanvas"></canvas>
 <audio id="song" src="https://raw.githubusercontent.com/YLZirem/Deneme/main/sarki.mp3"></audio>
+
+<!-- Fotoğraf galerisi -->
+<div class="gallery">
+  <img src="images/foto1.jpg" alt="Fotoğraf 1" />
+  <img src="images/foto2.jpg" alt="Fotoğraf 2" />
+  <img src="images/foto3.jpg" alt="Fotoğraf 3" />
+  <img src="images/foto4.jpg" alt="Fotoğraf 4" />
+  <img src="images/foto5.jpg" alt="Fotoğraf 5" />
+</div>
+
+<div id="lightbox" onclick="this.style.display='none'">
+  <img src="" alt="Büyük Görsel" />
+</div>
 
 <script>
 const startBtn = document.getElementById('startBtn');
@@ -121,6 +171,19 @@ startBtn.addEventListener('click', () => {
   drawConfetti();
   startBtn.disabled = true;
   startBtn.textContent = "Kutlama başladı! 🎉";
+});
+
+// Galeri için lightbox scripti
+const galleryImages = document.querySelectorAll('.gallery img');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = lightbox.querySelector('img');
+
+galleryImages.forEach(img => {
+  img.addEventListener('click', () => {
+    lightbox.style.display = 'flex';
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+  });
 });
 </script>
 
