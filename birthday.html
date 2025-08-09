@@ -5,11 +5,14 @@
 <title>Doğum Günün Kutlu Olsun</title>
 <style>
   body {
+    margin:0; padding:0;
     background: #0f1724;
     color: white;
     font-family: Arial, sans-serif;
     text-align: center;
-    margin: 0; padding: 0;
+    overflow-x: hidden;
+    height: 100vh;
+    position: relative;
   }
   h1 {
     margin-top: 50px;
@@ -24,6 +27,16 @@
     border: none;
     border-radius: 10px;
     color: white;
+    z-index: 10;
+    position: relative;
+  }
+  #confettiCanvas {
+    position: fixed;
+    top:0; left:0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 5;
   }
 </style>
 </head>
@@ -31,7 +44,82 @@
 
 <h1>🎉 Merhaba Öykü! 🎉</h1>
 <p>Doğum günün kutlu olsun! Butona basınca sürpriz başlıyor 🎶</p>
-<button onclick="alert('Sürpriz başladı! 🎉')">Kutlamayı Başlat</button>
+<button id="startBtn">Kutlamayı Başlat</button>
+
+<canvas id="confettiCanvas"></canvas>
+<audio id="song" src="https://raw.githubusercontent.com/KULLANICI_ADIN/Deneme/main/sarki.mp3"></audio>
+
+<script>
+const startBtn = document.getElementById('startBtn');
+const audio = document.getElementById('song');
+const canvas = document.getElementById('confettiCanvas');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+let confetti = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+function randomRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function createConfettiParticle() {
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H - H,
+    r: randomRange(5, 10),
+    d: randomRange(10, 50),
+    color: ['#ff66c4','#ffd36b','#7ef9a8','#6ee7ff','#b39cff'][Math.floor(Math.random()*5)],
+    tilt: randomRange(-10, 10),
+    tiltAngle: 0,
+    tiltAngleIncrement: randomRange(0.05, 0.12)
+  };
+}
+
+function initConfetti() {
+  confetti = [];
+  for(let i=0; i<150; i++) {
+    confetti.push(createConfettiParticle());
+  }
+}
+
+function drawConfetti() {
+  ctx.clearRect(0, 0, W, H);
+  confetti.forEach(p => {
+    p.tiltAngle += p.tiltAngleIncrement;
+    p.y += (Math.cos(p.d) + 3 + p.r / 2) * 0.5;
+    p.x += Math.sin(p.d);
+    p.tilt = Math.sin(p.tiltAngle) * 15;
+
+    ctx.beginPath();
+    ctx.lineWidth = p.r / 2;
+    ctx.strokeStyle = p.color;
+    ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+    ctx.stroke();
+
+    if(p.y > H) {
+      p.x = Math.random() * W;
+      p.y = -10;
+    }
+  });
+  requestAnimationFrame(drawConfetti);
+}
+
+startBtn.addEventListener('click', () => {
+  audio.play().catch(() => {});
+  initConfetti();
+  drawConfetti();
+  startBtn.disabled = true;
+  startBtn.textContent = "Kutlama başladı! 🎉";
+});
+</script>
 
 </body>
 </html>
