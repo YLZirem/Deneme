@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Doğum Günün Kutlu Olsun — Öykü</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#ff66c4;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.06);
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    body{
+      background: linear-gradient(180deg,#071026 0%, #0b1220 60%);
+      color: #fff;
+      display:flex;align-items:center;justify-content:center;padding:24px;
+    }
+    .stage{
+      width:100%;max-width:980px;background:rgba(255,255,255,0.02);border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);position:relative;overflow:hidden;
+    }
+    .top{
+      display:flex;gap:20px;align-items:center;
+    }
+    .avatar{
+      width:96px;height:96px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#6ea8ff);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:30px;color:#07203a;flex-shrink:0;
+    }
+    .title h1{margin:0;font-size:22px;letter-spacing:0.2px;}
+    .title p{margin:6px 0 0;color:var(--muted);font-size:14px;}
+    .center{
+      display:flex;gap:24px;margin-top:20px;
+      align-items:flex-start;
+    }
+    .left{
+      flex:1;
+    }
+    .cta{
+      margin-top:18px;
+    }
+    .btn{
+      background:linear-gradient(90deg,var(--accent),#ffd36b);
+      border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer;font-size:15px;
+      box-shadow:0 6px 18px rgba(255,102,196,0.12), inset 0 -2px 0 rgba(0,0,0,0.12);
+    }
+    .btn:active{transform:translateY(1px);}
+    .muted{color:var(--muted);font-size:13px;}
+    .screen{
+      flex:1.2;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;padding:14px;min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;
+    }
+    .message{
+      text-align:center;
+    }
+    .message h2{margin:8px 0;font-size:28px;}
+    .message p{margin:0;color:var(--muted);}
+    .slideshow{width:100%;height:180px;border-radius:10px;overflow:hidden;margin-top:14px;background:var(--glass);display:flex;align-items:center;justify-content:center;position:relative;}
+    .slide{
+      position:absolute;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#032;transition:opacity .6s ease, transform .6s ease;
+      background-size:cover;background-position:center;
+    }
+    .slide.hidden{opacity:0;transform:scale(0.98);pointer-events:none;}
+    .controls{margin-top:12px;display:flex;gap:8px;align-items:center;}
+    .small{font-size:13px;color:var(--muted)}
+    /* konfeti canvas tam ekran */
+    #confettiCanvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:60;}
+    /* mesaj panel */
+    .notes{margin-top:14px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;color:var(--muted);font-size:14px;}
+    footer{position:absolute;right:18px;bottom:12px;font-size:12px;color:var(--muted);}
+    /* responsive */
+    @media (max-width:700px){
+      .center{flex-direction:column;}
+      .top{flex-direction:row;gap:12px;}
+      .avatar{width:72px;height:72px;font-size:22px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <canvas id="confettiCanvas"></canvas>
+
+    <div class="top">
+      <div class="avatar" id="avatar">Ö</div>
+      <div class="title">
+        <h1 id="greeting">Merhaba Öykü!</h1>
+        <p id="subtitle">Doğum günün kutlu olsun 🎉 — Hazır ol, sürpriz başlıyor.</p>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="left">
+        <div class="screen" id="screen">
+          <div class="message" id="message">
+            <h2>Doğum Günün Kutlu Olsun, Öykü!</h2>
+            <p class="muted">Biraz ilerle; güzel anılar, fotoğraflar ve bir sürpriz var.</p>
+            <div class="slideshow" id="slideshow" aria-hidden="true">
+              <!-- slide'lar JS ile doldurulacak -->
+            </div>
+
+            <div class="controls" style="justify-content:center">
+              <button class="btn" id="startBtn">Kutlamayı Başlat</button>
+            </div>
+
+            <div class="notes small" id="afterNote" style="display:none">
+              Butona tıklayınca konfeti ve müzik tetiklenir. Resimleri değiştirmek için HTML içindeki `slides` dizisini düzenleyin.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:260px;max-width:40%;">
+        <div style="background:var(--glass);padding:14px;border-radius:12px;">
+          <h3 style="margin:0 0 8px 0">Kişisel Mesaj</h3>
+          <p id="personalMsg" style="margin:0;color:var(--muted)">Öykü, seninle paylaşılan anılar biriktikçe daha da güzel — nice mutlu yıllara! 💫</p>
+
+          <div style="margin-top:12px">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn" id="confettiBtn" style="background:linear-gradient(90deg,#7ef9a8,#6ee7ff);">Şimdi Patlat!</button>
+              <button class="btn" id="nextPhoto" style="background:linear-gradient(90deg,#ffd36b,#ff9a8b);">Foto →</button>
+            </div>
+            <p class="small" style="margin-top:8px">İsim, mesaj ve resimler aşağıdaki JS bölümünden kolayca düzenlenir.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>Hazırla: İrem — Özelleştirilebilir</footer>
+  </div>
+
+  <script>
+  /* ========== Kullanıcı tarafından kolayca düzenilebilir ayarlar ========== */
+  const RECIPIENT = "Öykü"; // buraya alıcının adını yaz
+  const MAIN_MESSAGE = "Doğum Günün Kutlu Olsun, " + RECIPIENT + "!";
+  const PERSONAL_NOTE = "Öykü, seninle paylaşılan anılar biriktikçe daha da güzel — nice mutlu yıllara! 💫";
+
+  // Slaytlar: image (URL) veya renk arkaplanı + text. Tarayıcıda lokal resimlerin yolunu da verebilirsin (ör: "images/1.jpg")
+  const slides = [
+    { type:"image", src:"https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200&auto=format&fit=crop&s=..." , caption:"Birlikte gittiğimiz o güne dair" },
+    { type:"color", color:"#ffdad6", caption:"Gülüşün en sevdiğim şey" },
+    { type:"color", color:"#e6f7ff", caption:"Daha nice maceralara!" }
+  ];
+  /* ====================================================================== */
+
+  // --- init UI text
+  document.getElementById("greeting").textContent = `Merhaba ${RECIPIENT}!`;
+  document.getElementById("personalMsg").textContent = PERSONAL_NOTE;
+  document.getElementById("message").querySelector("h2").textContent = MAIN_MESSAGE;
+  document.getElementById("avatar").textContent = RECIPIENT[0] || "Ö";
+
+  // --- slideshow render
+  const slideshow = document.getElementById("slideshow");
+  let current = 0;
+  function renderSlides(){
+    slideshow.innerHTML = "";
+    slides.forEach((s, i)=> {
+      const div = document.createElement("div");
+      div.className = "slide" + (i===0 ? "" : " hidden");
+      div.setAttribute("data-i", i);
+      if(s.type === "image"){
+        div.style.backgroundImage = `url('${s.src}')`;
+        div.innerHTML = s.caption ? `<div style="position:absolute;left:12px;bottom:10px;background:rgba(0,0,0,0.4);padding:6px 10px;border-radius:8px;font-size:13px">${s.caption}</div>` : "";
+      } else {
+        div.style.background = s.color || "#ccc";
+        div.style.color = "#07203a";
+        div.innerHTML = `<div style="font-weight:700;font-size:20px">${s.caption || ""}</div>`;
+      }
+      slideshow.appendChild(div);
+    });
+  }
+  renderSlides();
+
+  function showSlide(index){
+    const nodes = slideshow.querySelectorAll(".slide");
+    nodes.forEach(n=> n.classList.add("hidden"));
+    const chosen = slideshow.querySelector(`.slide[data-i='${index}']`);
+    if(chosen){ chosen.classList.remove("hidden"); }
+  }
+
+  document.getElementById("nextPhoto").addEventListener("click", ()=> {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+  });
+
+  // --- confetti system (simple particle emitter)
+  const canvas = document.getElementById("confettiCanvas");
+  const ctx = canvas.getContext("2d");
+  let W=0,H=0, particles=[];
+  function resizeCanvas(){
+    W = canvas.width = canvas.clientWidth;
+    H = canvas.height = canvas.clientHeight;
+  }
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+  function createConfetti(xRange){
+    const count = 110;
+    for(let i=0;i<count;i++){
+      particles.push({
+        x: rand(xRange[0], xRange[1]),
+        y: rand(-80, -10),
+        vx: rand(-2,2),
+        vy: rand(1,5),
+        size: rand(6,12),
+        rot: rand(0,360),
+        vr: rand(-6,6),
+        color: ['#ff66c4','#ffd36b','#7ef9a8','#6ee7ff','#b39cff'][Math.floor(rand(0,5))]
+      });
+    }
+  }
+
+  function updateParticles(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.08; // gravity
+      p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+      ctx.restore();
+      if(p.y > H + 30){
+        particles.splice(i,1);
+      }
+    }
+    if(particles.length) requestAnimationFrame(updateParticles);
+  }
+
+  function burstConfetti(){
+    // iki farklı aralıktan başlat
+    createConfetti([0, W*0.45]);
+    createConfetti([W*0.55, W]);
+    if(particles.length) updateParticles();
+  }
+
+  // --- sound (isteğe bağlı). Tarayıcı izinleri nedeniyle butona basılınca çalıyoruz.
+  const audio = new Audio();
+  // Basit ve telifsiz kısa bir melodi linki ya da kendi dosyanızın yolunu verin.
+  // Eğer offline çalıştıracaksanız bu alanı boş bırakın veya kendi file URL'inizi yazın.
+  audio.src = ""; // örnek: "sounds/happy_short.mp3"
+  audio.loop = false;
+
+  // Başlat butonu işlevi
+  const startBtn = document.getElementById("startBtn");
+  const confettiBtn = document.getElementById("confettiBtn");
+  startBtn.addEventListener("click", ()=> {
+    // göstergeyi değiştir
+    startBtn.disabled = true;
+    startBtn.textContent = "Hazırlanıyor...";
+    setTimeout(()=> {
+      startBtn.style.display = "none";
+      document.getElementById("afterNote").style.display = "block";
+      // tetikle
+      burstConfetti();
+      current = 0; showSlide(current);
+      // müzik varsa çal
+      try{ if(audio.src) audio.play().catch(()=>{}); }catch(e){}
+      // değişiklik: teşekkür / devam mesajı
+      document.getElementById("subtitle").textContent = "Sürpriz başladı ✨";
+    }, 450);
+  });
+
+  confettiBtn.addEventListener("click", ()=> {
+    burstConfetti();
+  });
+
+  // Klavye ile ilerle (opsiyonel)
+  window.addEventListener("keydown", (e)=>{
+    if(e.key === "ArrowRight"){
+      current = (current + 1) % slides.length; showSlide(current);
+    } else if(e.key === " "){
+      burstConfetti();
+    }
+  });
+
+  // Başlangıçta küçük bir ön gösterim
+  setTimeout(()=> {
+    // hafif küçük patlama, kullanıcı etkileşimi olmadan sadece görsel
+    createConfetti([W*0.3, W*0.7]); updateParticles();
+    setTimeout(()=>{ particles = []; ctx.clearRect(0,0,W,H); }, 700);
+  }, 800);
+
+  </script>
+</body>
+</html>
