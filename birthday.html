@@ -1,98 +1,37 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Doğum Günün Kutlu Olsun</title>
 <style>
-    body {
-        background-color: #0f1724;
-        color: white;
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 0;
-        padding: 0;
-    }
-    h1 {
-        margin-top: 50px;
-        font-size: 2.5rem;
-    }
-    button {
-        margin-top: 20px;
-        padding: 10px 20px;
-        font-size: 1.2rem;
-        cursor: pointer;
-        background-color: #ff66c4;
-        border: none;
-        border-radius: 10px;
-        color: white;
-    }
+  body {
+    background: #0f1724;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0; padding: 0;
+  }
+  h1 {
+    margin-top: 50px;
+    font-size: 2.5rem;
+  }
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background-color: #ff66c4;
+    border: none;
+    border-radius: 10px;
+    color: white;
+  }
 </style>
 </head>
 <body>
 
 <h1>🎉 Merhaba Öykü! 🎉</h1>
 <p>Doğum günün kutlu olsun! Butona basınca sürpriz başlıyor 🎶</p>
-<button onclick="startCelebration()">Kutlamayı Başlat</button>
-
-<canvas id="confettiCanvas"></canvas>
-
-<audio id="song" src="sarki.mp3"></audio>
-
-<script>
-
-// Konfeti ayarları
-const canvas = document.getElementById('confettiCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let confetti = [];
-
-function createConfetti() {
-    const colors = ['#ff66c4','#ffd36b','#7ef9a8','#6ee7ff','#b39cff'];
-    for (let i = 0; i < 150; i++) {
-        confetti.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height - canvas.height,
-            r: Math.random() * 6 + 4,
-            d: Math.random() * 50 + 10,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            tilt: Math.random() * 10 - 10
-        });
-    }
-}
-
-function drawConfetti() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    confetti.forEach(p => {
-        ctx.beginPath();
-        ctx.lineWidth = p.r;
-        ctx.strokeStyle = p.color;
-        ctx.moveTo(p.x + p.tilt + p.r/3, p.y);
-        ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/3);
-        ctx.stroke();
-    });
-    updateConfetti();
-    requestAnimationFrame(drawConfetti);
-}
-
-function updateConfetti() {
-    confetti.forEach(p => {
-        p.y += Math.cos(p.d) + 1 + p.r/2;
-        p.x += Math.sin(p.d);
-        if (p.y > canvas.height) {
-            p.x = Math.random() * canvas.width;
-            p.y = -10;
-        }
-    });
-}
-
-function startCelebration() {
-    document.getElementById('song').play();
-    createConfetti();
-    drawConfetti();
-}
-</script>
+<button onclick="alert('Sürpriz başladı! 🎉')">Kutlamayı Başlat</button>
 
 </body>
 </html>
